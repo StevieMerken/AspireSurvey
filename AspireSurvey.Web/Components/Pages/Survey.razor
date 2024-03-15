@@ -1,0 +1,59 @@
+﻿@page "/survey/{SurveyId}"
+
+@using AspireSurvey.Core
+@using AspireSurvey.Web.Components.SurveyComponents
+
+@attribute [StreamRendering(true)]
+
+@inject SurveyApiClient SurveyApi
+
+<PageTitle>Survey</PageTitle>
+
+
+@if (_editContext == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm EditContext="_editContext"
+              OnValidSubmit="OnSubmit"
+              FormName="@_survey.Id.ToString()">
+    @foreach(var question in _survey.Questions)
+    {
+        switch (question)
+        {
+            case Core.FreeText freeText:
+                    <FreeText @key="question" QuestionModel="freeText" AnswerModel="_surveyResult.GetAnswerForQuestionWithId<FreeTextAnswer>(freeText.Id)"></FreeText>
+                break;
+            default:
+                throw new NotImplementedException($"Unknow question type {question.GetType()}");
+        }
+    }        
+        <button type="submit">Submit</button>
+    </EditForm>
+}
+
+@code {
+
+    //TODO [SupplyParameterFromForm] bekijken
+
+    private AspireSurvey.Core.Survey? _survey;
+    private AspireSurvey.Core.SurveyResult? _surveyResult;
+    private EditContext? _editContext;
+
+    [Parameter]
+    public string? SurveyId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _survey = await SurveyApi.GetSurveyByIdAsync(SurveyId);
+        _surveyResult = SurveyResult.CreateNewFrom(_survey);
+        _editContext = new EditContext(_surveyResult);
+    }
+
+    private async Task OnSubmit()
+    {
+        var postResult = await SurveyApi.SubmitSurveyAsync(_surveyResult);
+    }
+}

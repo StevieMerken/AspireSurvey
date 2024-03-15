@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNetCore.Components.Forms;
+
+@if(AnswerModel is not null && QuestionModel is not null)
+{
+    <label>@QuestionModel.Question</label>
+    <InputText @bind-Value="@AnswerModel.Answer"></InputText>
+}
+
+@code {
+
+    [Parameter, EditorRequired]
+    public AspireSurvey.Core.FreeText? QuestionModel { get; set; }
+
+    [Parameter, EditorRequired]
+    public AspireSurvey.Core.FreeTextAnswer? AnswerModel { get; set; }
+}

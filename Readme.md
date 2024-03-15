@@ -1,0 +1,1 @@
+Hobby project to learn more about [.Net Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/get-started/aspire-overview) & Blazor
